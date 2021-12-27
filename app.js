@@ -5,13 +5,22 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
+// res.send("") => sends one text
+
+
+// res.write("") => used to send multiple texts 
+// res.write("")
+// res.send()
+
+// res.sendFile => sends an entire html file
+
 app.get("/", function(req, res) {
     var today = new Date();
 
     if(today.getDay() === 6 || today.getDay() === 0) {
-        res.send("It's a weedend :)")
+        res.write("<h1>It's a weedend :)</h1>")
     } else {
-        res.send("I have work to do :(")
+        res.sendFile(__dirname + "/index.html")
     }
 });
 
