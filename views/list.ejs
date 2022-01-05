@@ -1,14 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TO DO LIST</title>
-</head>
-<body>
-    <!-- Marker that tell ejs to replace the place with a variable -->
-    <h1>Today is a <%= kindOfDay %></h1>
+<%- include("./header"); %>
 
-</body>
-</html>
+<div class="box" id="heading">
+    <h1><%= listTitle %></h1>
+</div>
+
+<div class="box">
+    <!-- Loops through the items array -->
+    <% for (var i = 0; i < newListItems.length; i++) { %>
+    <div class="item">
+        <input type="checkbox">
+        <!-- Shows the newly added item in the array -->
+        <p><%= newListItems[i] %></p>
+    </div>
+    <% } %>
+
+
+    <!-- Sends data -->
+    <form class="item" action="/" method="post">
+        <input type="text" name="newItem" placeholder="New Item" autocomplete="off">
+        <button type="submit" name="list" value=<%= listTitle %>>+</button>
+    </form>
+</div>
+
+<%- include("./footer"); %>
