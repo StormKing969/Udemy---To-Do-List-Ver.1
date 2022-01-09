@@ -16,6 +16,7 @@ app.set("view engine", "ejs");
 
 // need to use "body"
 app.use(bodyParser.urlencoded({extended: true}));
+// used to style the pages
 app.use(express.static("public"))
 
 app.get("/", function(req, res) {
