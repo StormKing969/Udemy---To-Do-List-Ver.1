@@ -41,32 +41,54 @@ const item3 = new Item({
 
 const defaultItems = [item1, item2, item3];
 
-Item.insertMany(defaultItems, function(error, docs) {
-    if(error) {
-        console.log(error);
-    } else {
-        console.log("Successful")
-    }
-});
+function createList() {
+    Item.insertMany(defaultItems, function(error, docs) {
+        if(error) {
+            console.log(error);
+        } else {
+            console.log("Successful")
+        }
+    });
+}
+
+function updateItemList(userInput) {
+    const item = new Item({
+        name: userInput
+    });
+
+    item.save();
+}
 
 app.get("/", function(req, res) {
     let day = date();
 
-    // Passes the result to list.ejs
-    res.render("list", {listTitle: day, newListItems: items});
+    // Looks through the array
+    Item.find({}, function(err, foundItems) {
+        // console.log(foundItems);
+
+        if(foundItems.length === 0) {
+            createList();
+            res.redirect("/");
+        } else {
+            // Passes the result to list.ejs
+            res.render("list", {listTitle: day, newListItems: foundItems});
+        }
+    })
+
 });
 
 app.post("/", function(req, res) {
     let item = req.body.newItem;
 
-    if (req.body.list === "Work") {
-        workItems.push(item);
-        res.redirect("/work");
-    } else {
-        items.push(item);
-        // When post, save the value in variable then send to the "get"
-        res.redirect("/");
-    }
+    // if (req.body.list === "Work") {
+    //     workItems.push(item);
+    //     res.redirect("/work");
+    // } else {
+    // }
+    
+    updateItemList(item);
+    // When post, save the value in variable then send to the "get"
+    res.redirect("/");
 
     
 });

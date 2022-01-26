@@ -7,13 +7,22 @@
 
 <div class="box">
     <!-- Loops through the items array -->
-    <% for (var i = 0; i < newListItems.length; i++) { %>
+    <% newListItems.forEach(listItems => { %>
+        <div class="item">
+            <input type="checkbox">
+            <!-- Shows the newly added item in the array -->
+            <p><%= listItems.name %></p>
+        </div>
+    <% }) %>
+
+    <!-- Loops through the items array
+     for (var i = 0; i < newListItems.length; i++) { 
     <div class="item">
         <input type="checkbox">
-        <!-- Shows the newly added item in the array -->
-        <p><%= newListItems[i] %></p>
+        Shows the newly added item in the array
+        <p> newListItems[i].name</p>
     </div>
-    <% } %>
+    }  -->
 
 
     <!-- Sends data -->
