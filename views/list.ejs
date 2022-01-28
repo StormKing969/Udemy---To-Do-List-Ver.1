@@ -8,11 +8,13 @@
 <div class="box">
     <!-- Loops through the items array -->
     <% newListItems.forEach(listItems => { %>
-        <div class="item">
-            <input type="checkbox">
-            <!-- Shows the newly added item in the array -->
-            <p><%= listItems.name %></p>
-        </div>
+        <form action="/delete" method="post">
+            <div class="item">
+                <input type="checkbox" name="box" value="<%= listItems._id %>" onchange="this.form.submit()">
+                <!-- Shows the newly added item in the array -->
+                <p><%= listItems.name %></p>
+            </div>
+        </form>
     <% }) %>
 
     <!-- Loops through the items array

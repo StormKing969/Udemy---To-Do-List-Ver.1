@@ -89,9 +89,24 @@ app.post("/", function(req, res) {
     updateItemList(item);
     // When post, save the value in variable then send to the "get"
     res.redirect("/");
-
-    
 });
+
+app.post("/delete", function(req, res) {
+    const checkedItem = req.body.box;
+
+    deleteItems(checkedItem);
+    res.redirect("/");
+})
+
+function deleteItems(item_id) {
+    Item.findByIdAndRemove(item_id, function(err) {
+        if(!err) {
+            console.log("Removal was successful");
+        } else {
+            console.log(err);
+        }
+    })
+}
 
 // ==============================================================================
 
