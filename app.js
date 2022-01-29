@@ -16,10 +16,10 @@ app.use(bodyParser.urlencoded({extended: true}));
 // used to style the pages
 app.use(express.static("public"))
 
-let workItems = [];
-
 // Create mongoose DB
 mongoose.connect("mongodb://localhost:27017/ToDoList");
+
+// ===================================================================
 
 const itemsSchema = {
     name: String
@@ -41,23 +41,34 @@ const item3 = new Item({
 
 const defaultItems = [item1, item2, item3];
 
-function createList() {
-    Item.insertMany(defaultItems, function(error, docs) {
-        if(error) {
-            console.log(error);
+const listSchema = {
+    name: String,
+    items: [itemsSchema]
+};
+
+const List = mongoose.model("List", listSchema);
+
+app.get("/:customListName", function(req, res) {
+    const customLink = req.params.customListName;
+
+    List.findOne({name: customLink}, function(err, foundOne) {
+        if(!err) {
+            if(!foundOne) {
+                console.log("Doesn't exist");
+                // Create a new list
+                newList(customLink);
+
+                res.redirect("/" + customLink);
+            } else {
+                // Show existing list
+                console.log("Exist")
+                res.render("list", {listTitle: foundOne.name, newListItems: foundOne.items});
+            }
         } else {
-            console.log("Successful")
+            console.log(err);
         }
-    });
-}
-
-function updateItemList(userInput) {
-    const item = new Item({
-        name: userInput
-    });
-
-    item.save();
-}
+    })
+})
 
 app.get("/", function(req, res) {
     let day = date();
@@ -65,8 +76,9 @@ app.get("/", function(req, res) {
     // Looks through the array
     Item.find({}, function(err, foundItems) {
         // console.log(foundItems);
-
-        if(foundItems.length === 0) {
+        if(err) {
+            console.log(err);
+        } else if(foundItems.length === 0) {
             createList();
             res.redirect("/");
         } else {
@@ -98,6 +110,12 @@ app.post("/delete", function(req, res) {
     res.redirect("/");
 })
 
+app.listen(port, function() {
+    console.log("Server is connected to port " + port);
+});
+
+// ========================================================================
+
 function deleteItems(item_id) {
     Item.findByIdAndRemove(item_id, function(err) {
         if(!err) {
@@ -108,28 +126,29 @@ function deleteItems(item_id) {
     })
 }
 
-// ==============================================================================
+function createList() {
+    Item.insertMany(defaultItems, function(error, docs) {
+        if(error) {
+            console.log(error);
+        } else {
+            console.log("Successful");
+        }
+    });
+}
 
-app.get("/work", function(req, res) {
-    res.render("list", {listTitle: "Work List", newListItems: workItems});
-});
+function updateItemList(userInput) {
+    const item = new Item({
+        name: userInput
+    });
 
-app.post("/work", function(req, res) {
-    let item = req.body.newItem;
+    item.save();
+}
 
-    workItems.push(item);
-    
-    // When post, save the value in variable then send to the "get"
-    res.redirect("/work");
-});
+function newList(newLink) {
+    const list = new List({
+        name: newLink,
+        items: defaultItems
+    });
 
-
-// ============================================================================
-
-app.get("/about", function(req, res) {
-    res.render("about");
-});
-
-app.listen(port, function() {
-    console.log("Server is connected to port " + port)
-});
+    list.save();
+}
