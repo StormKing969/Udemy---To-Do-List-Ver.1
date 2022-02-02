@@ -70,9 +70,9 @@ app.get("/:customListName", function(req, res) {
     })
 })
 
-app.get("/", function(req, res) {
-    let day = date();
+let day = date();
 
+app.get("/", function(req, res) {
     // Looks through the array
     Item.find({}, function(err, foundItems) {
         // console.log(foundItems);
@@ -90,7 +90,8 @@ app.get("/", function(req, res) {
 });
 
 app.post("/", function(req, res) {
-    let item = req.body.newItem;
+    const item = req.body.newItem;
+    const listName = req.body.list;
 
     // if (req.body.list === "Work") {
     //     workItems.push(item);
@@ -98,9 +99,27 @@ app.post("/", function(req, res) {
     // } else {
     // }
     
-    updateItemList(item);
-    // When post, save the value in variable then send to the "get"
-    res.redirect("/");
+    if(listName === day) {
+        updateItemList(item).save();
+    
+        // When post, save the value in variable then send to the "get"
+        res.redirect("/");
+    } else {
+        List.findOne({name: listName}, function(err, foundList) {
+            if(!err) {
+                // Alternate fix
+                // const newitem = new Item({
+                //     name: item
+                // });
+
+                foundList.items.push(updateItemList(item));
+                foundList.save();
+                res.redirect("/" + listName);
+            } else {
+                console.log(err);
+            }
+        })
+    }
 });
 
 app.post("/delete", function(req, res) {
@@ -141,7 +160,10 @@ function updateItemList(userInput) {
         name: userInput
     });
 
-    item.save();
+    return item;
+
+    // Remove the save function to enable save in different lists
+    // item.save();
 }
 
 function newList(newLink) {
