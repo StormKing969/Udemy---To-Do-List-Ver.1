@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const _ = require("lodash");
 const port = 3000;
 
 // importing local module
@@ -28,15 +29,15 @@ const itemsSchema = {
 const Item = mongoose.model("Item", itemsSchema);
 
 const item1 = new Item({
-    name: "Wake"
+    name: "Welcome to the TODO APP"
 });
 
 const item2 = new Item({
-    name: "Brush your teeth"
+    name: "Hit the + button to add a new item"
 });
 
 const item3 = new Item({
-    name: "Clean your bed"
+    name: "<<< Check this box to delete"
 });
 
 const defaultItems = [item1, item2, item3];
@@ -49,19 +50,19 @@ const listSchema = {
 const List = mongoose.model("List", listSchema);
 
 app.get("/:customListName", function(req, res) {
-    const customLink = req.params.customListName;
+    const customLink = _.capitalize(req.params.customListName);
 
     List.findOne({name: customLink}, function(err, foundOne) {
         if(!err) {
             if(!foundOne) {
-                console.log("Doesn't exist");
+                console.log("Link doesn't exist");
                 // Create a new list
                 newList(customLink);
 
                 res.redirect("/" + customLink);
             } else {
                 // Show existing list
-                console.log("Exist")
+                console.log("Link exist")
                 res.render("list", {listTitle: foundOne.name, newListItems: foundOne.items});
             }
         } else {
@@ -83,7 +84,7 @@ app.get("/", function(req, res) {
             res.redirect("/");
         } else {
             // Passes the result to list.ejs
-            res.render("list", {listTitle: day, newListItems: foundItems});
+            res.render("list", {listTitle: "day", newListItems: foundItems});
         }
     })
 
@@ -99,7 +100,7 @@ app.post("/", function(req, res) {
     // } else {
     // }
     
-    if(listName === day) {
+    if(listName == "day") {
         updateItemList(item).save();
     
         // When post, save the value in variable then send to the "get"
@@ -111,6 +112,7 @@ app.post("/", function(req, res) {
                 // const newitem = new Item({
                 //     name: item
                 // });
+                // console.log(foundList.items)
 
                 foundList.items.push(updateItemList(item));
                 foundList.save();
@@ -123,10 +125,27 @@ app.post("/", function(req, res) {
 });
 
 app.post("/delete", function(req, res) {
-    const checkedItem = req.body.box;
+    const checkedItemID = req.body.box;
+    const listName = req.body.listName;
 
-    deleteItems(checkedItem);
-    res.redirect("/");
+    if(listName == "day") {
+        deleteItems(checkedItemID);
+    
+        // When post, save the value in variable then send to the "get"
+        res.redirect("/");
+    } else {
+        List.findOneAndUpdate(
+            {name: listName}, 
+            {$pull: {items: {_id: checkedItemID}}},
+            function(err, foundList) {
+                if(!err) {
+                    console.log("Removal was successful");
+                    res.redirect("/" + listName);
+                } else {
+                    console.log(err);
+                }
+        })
+    }
 })
 
 app.listen(port, function() {
@@ -150,7 +169,7 @@ function createList() {
         if(error) {
             console.log(error);
         } else {
-            console.log("Successful");
+            console.log("Creation of default list successful");
         }
     });
 }
