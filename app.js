@@ -18,13 +18,13 @@ const app = express();
 // needed to use EJS
 app.set("view engine", "ejs");
 
-// need to use "body"
+// needed to use "body"
 app.use(bodyParser.urlencoded({extended: true}));
 // used to style the pages
 app.use(express.static("public"))
 
 // Create mongoose DB
-mongoose.connect(DB_URL);
+mongoose.connect(String(DB_URL));
 
 // ===================================================================
 
