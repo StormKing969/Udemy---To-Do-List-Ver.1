@@ -1,3 +1,9 @@
+// Using .env file to store sensitive data
+require("dotenv").config();
+
+// Extracting the required information
+const DB_URL = process.env.DB_URI;
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -18,7 +24,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"))
 
 // Create mongoose DB
-mongoose.connect("mongodb+srv://admin-Saj:txp%40KXP5rpk6ngc0rye@cluster0.fscmn.mongodb.net/ToDoList");
+mongoose.connect(DB_URL);
 
 // ===================================================================
 
