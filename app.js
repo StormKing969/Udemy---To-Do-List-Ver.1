@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"))
 
 // Create mongoose DB
-mongoose.connect("mongodb://localhost:27017/ToDoList");
+mongoose.connect("mongodb+srv://admin-Saj:txp%40KXP5rpk6ngc0rye@cluster0.fscmn.mongodb.net/ToDoList");
 
 // ===================================================================
 
