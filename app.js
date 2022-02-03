@@ -2,7 +2,7 @@
 require("dotenv").config();
 
 // Extracting the required information
-const DB_URL = process.env.DB_URI;
+const DB_URL = String(process.env.DB_URI);
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"))
 
 // Create mongoose DB
-mongoose.connect(String(DB_URL));
+mongoose.connect(DB_URL);
 
 // ===================================================================
 
